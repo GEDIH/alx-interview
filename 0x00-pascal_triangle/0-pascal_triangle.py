@@ -38,3 +38,4 @@ def pascal_triangle(n):
                 pascal_triangle[x-2][y-1] + pascal_triangle[x-2][y]
 
     return pascal_triangle
+    
