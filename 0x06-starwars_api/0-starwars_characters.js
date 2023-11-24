@@ -1,41 +1,17 @@
 #!/usr/bin/node
 
-/* eslint-disable */
 const request = require('request');
 
-function getCharacterEndPoints(filmID) {
-  const filmURL = `https://swapi-api.alx-tools.com/api/films/${filmID}`;
-  return new Promise((resolve, reject) => {
-    request(filmURL, (error, response, body) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(JSON.parse(body).characters);
-      }
-    });
+request('https://swapi-api.hbtn.io/api/films/' + process.argv[2], function (err, res, body) {
+  if (err) throw err;
+  const actors = JSON.parse(body).characters;
+  exactOrder(actors, 0);
+});
+const exactOrder = (actors, x) => {
+  if (x === actors.length) return;
+  request(actors[x], function (err, res, body) {
+    if (err) throw err;
+    console.log(JSON.parse(body).name);
+    exactOrder(actors, x + 1);
   });
-}
-const starWarID = process.argv[2]
-getCharacterEndPoints(starWarID)
-  .then((userEndPoints) => {
-    const requests = userEndPoints.map((element) => {
-      return new Promise((resolve, reject) => {
-        request(element, (error, response, body) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(JSON.parse(body).name);
-          }
-        });
-      });
-    });
-
-    Promise.all(requests)
-      .then((characterNames) => {
-        characterNames.forEach((name) => {
-          console.log(name);
-        });
-      })
-      .catch((error) => console.log(error));
-  })
-  .catch((error) => console.log(error));
+};
